@@ -21,11 +21,12 @@ const css = `
   }
 
   :host > div > div {
-    height: 100%;
-    min-height: auto;
+    min-height: 100%;
+    /*height: 100%;
+    min-height: auto;*/
   }
 
-  :host [data-menu-panel] {
+  :host [data-menu-panel] > * {
     background: var(--wc-bg-2, #ffffff);
   }
 
@@ -40,6 +41,7 @@ const css = `
   ::slotted([slot="menu"]) { 
     min-height: auto;
     height: 100%;
+    box-sizing: border-box;
   }
 
   /* Left & Right */
@@ -64,7 +66,7 @@ const css = `
   }
   :host([data-open="true"][data-position="right"]) [data-menu-panel],
   :host([data-open="true"][data-position="left"]) [data-menu-panel] {
-    width: var(--wc-pushdrawer-maxwidth, 100%);
+    width: var(--wc-pushdrawer-maxwidth, 75%);
   }
 
 
@@ -92,11 +94,11 @@ const css = `
   }
   :host([data-open="true"][data-position="bottom"]) [data-menu-panel],
   :host([data-open="true"][data-position="top"]) [data-menu-panel] {
-    flex-basis: var(--wc-pushdrawer-maxheight, 100%);
+    flex-basis: var(--wc-pushdrawer-maxheight, 75%);
   }
   :host([data-open="true"][data-position="bottom"]) [data-content-panel],
   :host([data-open="true"][data-position="top"]) [data-content-panel] {
-    flex-basis: calc(100% - var(--wc-pushdrawer-maxheight, 100%));
+    flex-basis: calc(100% - var(--wc-pushdrawer-maxheight, 75%));
   }
 
 
@@ -116,7 +118,7 @@ const css = `
   }
   :host([data-open]) button.close:hover {
     cursor: pointer;
-    background: var(--wc-bg-2, #ddd);
+    background: var(--wc-bg-3, #ddd);
   }
   :host([data-open]) button.close:focus {
     cursor: pointer;
@@ -125,8 +127,41 @@ const css = `
 
   .topper {
     display: flex;
+    position: sticky;
+    top:0;
     justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--wc-bg-3, #ddd);
+    background: var(--wc-bg-2, #ffffff);
   }
+
+  /* Medium devices (tablets, 768px and up) */
+  @media screen and (min-width: 768px) {
+    :host([data-position="left"]),
+    :host([data-position="right"]){ 
+      --wc-pushdrawer-maxwidth: 50%;
+      --wc-pushdrawer-minwidth: 50%;
+    }
+    :host([data-position="top"]),
+    :host([data-position="bottom"]) {
+      --wc-pushdrawer-maxheight: 50%;
+      --wc-pushdrawer-minheight: 50%;
+    }
+  }
+
+    /* Large devices (desktops, 992px and up) */
+  @media screen and (min-width: 992px) and (orientation: landscape) {
+    :host([data-position="left"]),
+    :host([data-position="right"]) { 
+      --wc-pushdrawer-maxwidth: 25%;
+      --wc-pushdrawer-minwidth: 25%;
+    }
+    :host([data-position="top"]),
+    :host([data-position="bottom"]) {
+      --wc-pushdrawer-maxheight: 25%;
+      --wc-pushdrawer-minheight: 25%;
+    }
+  }  
 
 `;
 
@@ -191,8 +226,6 @@ class Component extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return false; // if value hadn't changed do nothing
-    if (name === "data-title") this.titleEl.innerHTML = newValue;
-    //if (name === "data-position") this.resetHeight();
     this._dispatch("attribute-change");
     return this;
   }
@@ -203,7 +236,6 @@ class Component extends HTMLElement {
     this.menuEl.addEventListener("transitionend", e => {
       if (e.propertyName === "width") this._dispatch("toggle-panel");
     });
-    this.resetHeight();
   }
 
   disconnectedCallback() {
@@ -216,7 +248,7 @@ class Component extends HTMLElement {
 
   _setElements() {
     this.closeEl = this.dom.querySelector("button.close");
-    this.titleEl = this.dom.querySelector("div.title");
+    //this.titleEl = this.dom.querySelector("div.title");
     this.menuEl = this.dom.querySelector("[data-menu-panel]");
     this.overlayEl = this.dom.querySelector("div.overlay");
     const focusables = this.querySelectorAll(
@@ -255,6 +287,7 @@ class Component extends HTMLElement {
     const content = this.dom.querySelector("[data-content-panel] .inner");
     const menu = this.dom.querySelector("[data-menu-panel] .inner");
     return {
+      parentHeight: this.parentElement.clientHeight,
       hostHeight: this.getBoundingClientRect().height,
       contentHeight: content.getBoundingClientRect().height,
       menuHeight: menu.getBoundingClientRect().height,
@@ -267,13 +300,12 @@ class Component extends HTMLElement {
   resetHeight() {
     // height must be defined for top/bottom transition
     if (this.getAttribute("data-transition") === "true") {
-      this.style.height = `${this.getBoundingClientRect().height}px`;
+      this.style.height = `${this.parentElement.clientHeight}px`;
     }
   }
 
   open(triggerEl = null) {
     if (triggerEl) this.triggerEl = triggerEl;
-    this.resetHeight();
     this.setAttribute("data-open", "true");
     this.elements.map(i => i.setAttribute("tabindex", 0));
     this.closeEl.focus();

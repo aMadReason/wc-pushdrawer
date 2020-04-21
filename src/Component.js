@@ -66,7 +66,7 @@ const css = `
   }
   :host([data-open="true"][data-position="right"]) [data-menu-panel],
   :host([data-open="true"][data-position="left"]) [data-menu-panel] {
-    width: var(--wc-pushdrawer-maxwidth, 75%);
+    width: var(--wc-pushdrawer-maxwidth);
   }
 
 
@@ -90,15 +90,16 @@ const css = `
   :host([data-position="bottom"]) [data-menu-panel],
   :host([data-position="top"]) [data-menu-panel] {
     width: 100%;
-    flex: 2 1 0;
+    flex: 0 1 0;
   }
   :host([data-open="true"][data-position="bottom"]) [data-menu-panel],
   :host([data-open="true"][data-position="top"]) [data-menu-panel] {
-    flex-basis: var(--wc-pushdrawer-maxheight, 75%);
+    /* flex-basis: var(--wc-pushdrawer-maxheight); */
+    flex-basis: auto;
   }
   :host([data-open="true"][data-position="bottom"]) [data-content-panel],
   :host([data-open="true"][data-position="top"]) [data-content-panel] {
-    flex-basis: calc(100% - var(--wc-pushdrawer-maxheight, 75%));
+    flex-basis: calc(100% - var(--wc-pushdrawer-maxheight));
   }
 
 
@@ -135,8 +136,9 @@ const css = `
     background: var(--wc-bg-2, #ffffff);
   }
 
-  /* Medium devices (tablets, 768px and up) */
-  @media screen and (min-width: 768px) {
+
+  /* small devices */
+  @media screen and (min-width: 450px) {
     :host([data-position="left"]),
     :host([data-position="right"]){ 
       --wc-pushdrawer-maxwidth: 50%;
@@ -260,7 +262,7 @@ class Component extends HTMLElement {
   _dispatch(type = "dispatch") {
     const attributes = { type };
     [].slice.call(this.attributes).map(a => (attributes[a.name] = a.value));
-    const event = new CustomEvent("tea-event", {
+    const event = new CustomEvent("wc-event", {
       detail: { ...attributes }
     });
     this.dispatchEvent(event);
@@ -287,7 +289,6 @@ class Component extends HTMLElement {
     const content = this.dom.querySelector("[data-content-panel] .inner");
     const menu = this.dom.querySelector("[data-menu-panel] .inner");
     return {
-      parentHeight: this.parentElement.clientHeight,
       hostHeight: this.getBoundingClientRect().height,
       contentHeight: content.getBoundingClientRect().height,
       menuHeight: menu.getBoundingClientRect().height,

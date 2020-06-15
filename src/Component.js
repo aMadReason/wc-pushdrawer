@@ -32,7 +32,7 @@ const css = `
 
   :host([data-transition="true"]) [data-menu-panel],
   :host([data-transition="true"]) [data-content-panel] {
-    transition: flex-basis var(--wc-transition, 0.5s ease), 
+      transition: flex-basis var(--wc-transition, 0.5s ease), 
       width var(--wc-transition, 0.5s ease),
       box-shadow var(--wc-transition, 0.5s ease);
   }
@@ -55,6 +55,7 @@ const css = `
   :host([data-position="left"]) .inner {
     min-width: var(--wc-pushdrawer-minwidth, 200px);
     height: 100%;
+    border: 0;
   }
   :host([data-position="right"]) [data-content-panel],
   :host([data-position="left"]) [data-content-panel] {
@@ -91,10 +92,10 @@ const css = `
   :host([data-position="top"]) [data-menu-panel] {
     width: 100%;
     flex: 0 1 0;
+    border: 0;
   }
   :host([data-open="true"][data-position="bottom"]) [data-menu-panel],
   :host([data-open="true"][data-position="top"]) [data-menu-panel] {
-    /* flex-basis: var(--wc-pushdrawer-maxheight); */
     flex-basis: auto;
   }
   :host([data-open="true"][data-position="bottom"]) [data-content-panel],
@@ -134,6 +135,7 @@ const css = `
     align-items: center;
     border-bottom: 1px solid var(--wc-bg-3, #ddd);
     background: var(--wc-bg-2, #ffffff);
+    z-index: 1;
   }
 
 
@@ -160,7 +162,7 @@ const css = `
     }
     :host([data-position="top"]),
     :host([data-position="bottom"]) {
-      --wc-pushdrawer-maxheight: 25%;
+      --wc-pushdrawer-maxheight: 50%;
       --wc-pushdrawer-minheight: 25%;
     }
   }  
@@ -288,13 +290,21 @@ class Component extends HTMLElement {
   getDimensions() {
     const content = this.dom.querySelector("[data-content-panel] .inner");
     const menu = this.dom.querySelector("[data-menu-panel] .inner");
+
+    const hostHeight = this.getBoundingClientRect().height;
+    const contentHeight = content.getBoundingClientRect().height;
+    const menuHeight = menu.getBoundingClientRect().height;
+    const hostWidth = this.getBoundingClientRect().width;
+    const contentWidth = content.getBoundingClientRect().width;
+    const menuWidth = menu.getBoundingClientRect().width;
+
     return {
-      hostHeight: this.getBoundingClientRect().height,
-      contentHeight: content.getBoundingClientRect().height,
-      menuHeight: menu.getBoundingClientRect().height,
-      hostWidth: this.getBoundingClientRect().width,
-      contentWidth: content.getBoundingClientRect().width,
-      menuWidth: menu.getBoundingClientRect().width
+      hostHeight,
+      contentHeight,
+      menuHeight,
+      hostWidth,
+      contentWidth,
+      menuWidth
     };
   }
 

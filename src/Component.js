@@ -32,7 +32,7 @@ const css = `
 
   :host([data-transition="true"]) [data-menu-panel],
   :host([data-transition="true"]) [data-content-panel] {
-      transition: flex-basis var(--wc-transition, 0.5s ease), 
+    transition: flex-basis var(--wc-transition, 0.5s ease), 
       width var(--wc-transition, 0.5s ease),
       box-shadow var(--wc-transition, 0.5s ease);
   }
@@ -96,6 +96,7 @@ const css = `
   }
   :host([data-open="true"][data-position="bottom"]) [data-menu-panel],
   :host([data-open="true"][data-position="top"]) [data-menu-panel] {
+    /* flex-basis: var(--wc-pushdrawer-maxheight); */
     flex-basis: auto;
   }
   :host([data-open="true"][data-position="bottom"]) [data-content-panel],
@@ -157,7 +158,7 @@ const css = `
   @media screen and (min-width: 992px) and (orientation: landscape) {
     :host([data-position="left"]),
     :host([data-position="right"]) { 
-      --wc-pushdrawer-maxwidth: 25%;
+      --wc-pushdrawer-maxwidth: 35%;
       --wc-pushdrawer-minwidth: 25%;
     }
     :host([data-position="top"]),
@@ -179,7 +180,7 @@ const markup = values => `
     </div>
   </div>
 
-  <div data-menu-panel role="menu">
+  <div data-menu-panel>
     <div>
       <div class="inner">
         <div class="topper">
